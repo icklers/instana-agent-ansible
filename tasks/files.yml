@@ -4,6 +4,7 @@
 - set_fact:
     config_dir: '/opt/instana/agent/etc/'
     config_prefix: '/opt/instana/agent/etc/instana/com.instana.agent.'
+    systemd_env: '/opt/instana/agent/etc/systemd.env'
 
 - name: "create config directory {{ config_dir }}"
   file: path={{ config_dir }} state=directory
@@ -78,3 +79,14 @@
   lineinfile:
     destfile: "{{ config_prefix }}main.config.Agent.cfg"
     line: "mode = {{ instana_agent_mode|upper }}"
+
+- name: 'set environment for azure plugin'
+  blockinfile:
+    path: "{{ systemd_env }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      INSTANA_AZURE_SUBSCRIPTION = {{ instana_agent_plugin.azure.subscription }}
+      INSTANA_AZURE_TENANT_ID = {{ instana_agent_plugin.azure.tenant }}
+      INSTANA_AZURE_SPID = {{ instana_agent_plugin.azure.clientid }}
+      INSTANA_AZURE_SPSECRET = {{ instana_agent_plugin.azure.password }}
+  when: instana_agent_plugin.azure.enabled is sameas true

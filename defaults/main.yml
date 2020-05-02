@@ -93,6 +93,9 @@ instana_agent_zone: ""
 # See:: https://docs.instana.io/quick_start/agent_configuration/#tags
 instana_agent_tags: []
 
+# Set explicitly which filesystems to monitor on the host
+instana_agent_filesystems: []
+
 # We support running and updating the Instana agent through a proxy setup.
 # See:: https://docs.instana.io/quick_start/on_prem/on_prem_agent_repository/#sonatype-nexus-proxy-setup
 instana_agent_proxy_enabled: False
@@ -116,3 +119,70 @@ instana_agent_mirror_auth_username: ""
 instana_agent_mirror_auth_password: ""
 instana_agent_mirror_urls_release: ""
 instana_agent_mirror_urls_shared: ""
+
+instana_agent_plugin:
+  httpd:
+    enabled: False
+    username: ''
+    password: ''
+  postgres:
+    enabled: False
+    user: ''
+    password: ''
+    database: ''
+  mssql:
+    enabled: False
+    user: ''
+    password: ''
+  springboot:
+    enabled: False
+    metrics_interval: 1
+    health_interval: 30
+  jenkins:
+    enabled: False
+    user: ''
+    password: ''
+  consul:
+    enabled: False
+    client: ''
+    httpPort: 8500
+    token: ''
+  vault:
+    enabled: False
+  vsphere:
+    enabled: False
+    hostname: ''
+    user: ''
+    password: ''
+    poll_rate: ''
+  azure:
+    enabled: False
+    subscription: ''
+    tenant: ''
+    clientid: ''
+    secret: ''
+    apimanagement:
+      enabled: False
+    appservice:
+      enabled: False
+    cosmosdb:
+      enabled: False
+    rediscache:
+      enabled: False
+    sqldb:
+      enabled: False
+    sqlelasticpool:
+      enabled: False
+    sqlserver:
+      enabled: False
+    storage:
+      enabled: False
+  saphana:
+    singlecontainer:
+      enabled: False
+      user: ''
+      password: ''
+  crio:
+    enabled: False
+    stats:
+      interval: 10

@@ -27,6 +27,11 @@ com.instana.plugin.host:
 {% for tag in instana_agent_tags %}
     - '{{ tag }}'
 {% endfor %}
+{% if instana_agent_filesystems|length > 0 %}
+{% for fs in instana_agent_filesystems %}
+    - '{{ fs }}'
+{% endfor %}
+{% endif %}
 {% endif %}
 
 # Hardware & Zone
@@ -36,10 +41,12 @@ com.instana.plugin.generic.hardware:
   enabled: true # disabled by default
 {% endif %}
 
+{% if instana_agent_plugin.httpd.enabled is sameas true %}
 # Apache Httpd
-#com.instana.plugin.httpd:
-#  user: ''
-#  password: ''
+com.instana.plugin.httpd:
+  user: {{ instana_agent_plugin.httpd.user }}
+  password: {{ instana_agent_plugin.httpd.password }}
+{% endif %}
 
 # Custom processes
 # To enable low level metric and availability monitoring for not automatically
@@ -55,6 +62,12 @@ com.instana.plugin.generic.hardware:
 #  arguments:
 #    - '/opt/script.sh'
 
+{% if instana_agent_plugin.crio.enabled is sameas true %}
+com.instana.plugin.crio:
+  stats:
+    interval: {{ instana_agent_plugin.crio.stats.interval }}
+{% endif %}
+
 # Memcached
 #com.instana.plugin.memcached:
 #  user: ''
@@ -66,10 +79,20 @@ com.instana.plugin.generic.hardware:
 #  source: '' # database where the user is defined
 #  password: ''
 
+{% if instana_agent_plugin.springboot.enabled is sameas true %}
+# Springboot
+com.instana.plugin.springboot:
+  enabled: true
+  metrics-interval: {{ instana_agent_plugin.springboot.metrics.interval }}
+  health-interval: {{ instana_agent_plugin.springboot.health-interval }}
+{% endif %}
+
+{% if instana_agent_plugin.mssql.enabled is sameas true %}
 # Mssql
-#com.instana.plugin.mssql:
-#  user: ''
-#  password: ''
+com.instana.plugin.mssql:
+  user: '{{ instana_agent_plugin.mssql.user }}'
+  password: '{{ instana_agent_plugin.mssql.password }}'
+{% endif %}
 
 # Mysql
 #com.instana.plugin.mysql:
@@ -81,11 +104,13 @@ com.instana.plugin.generic.hardware:
 #  user: ''
 #  password: ''
 
+{% if instana_agent_plugin.postgres.enabled is sameas true %}
 # PostgreSQL
-#com.instana.plugin.postgresql:
-#  user: ''
-#  password: ''
-#  database: '' # by default PostgreSQL will use 'user' as database to connect to.
+com.instana.plugin.postgresql:
+  user: '{{ instana_agent_plugin.postgres.user }}'
+  password: '{{ instana_agent_plugin.postgres.password }}'
+  database: '{{ instana_agent_plugin.postgres.database }}' # by default PostgreSQL will use 'user' as database to connect to.
+{% endif %}
 
 # Redis
 #com.instana.plugin.redis:
@@ -168,11 +193,37 @@ com.instana.plugin.generic.hardware:
 #    # tracing sensor.
 #    enabled: true
 
-## Sap HANA
-#com.instana.plugin.saphana:
-#  singleContainer:
-#    user: '' #default is 'SYSTEM'
-#    password: ''
+{% if instana_agent_plugin.jenkins.enabled is sameas true %}
+# Jenkins
+com.instana.plugin.jenkins:
+  user: ''     #default is 'user'
+  password: '' #default is 'user'
+{% endif %}
+
+# Consul
+{% if instana_agent_plugin.consul.enabled is sameas true %}
+com.instana.plugin.consul:
+  enabled: true
+  client: '{{ instana_agent_plugin.consul.client }}'   
+  httpPort: {{ instana_agent_plugin.consul.httpPort }}
+  token: '{{ instana_agent_plugin.consul.token }}'
+{% endif %}
+
+# Vault
+{% if instana_agent_plugin.jenkins.enabled is sameas true %}
+com.instana.plugin.vault:
+  token: <INSERT_TOKEN_HERE>
+{% endif %}
+
+{% if instana_agent_plugin.saphana.enabled is sameas true %}
+# Sap HANA
+com.instana.plugin.saphana:
+  {% if instana_agent_plugin.saphana.singlecontainer.enabled is sameas true%}
+  singleContainer:
+    user: '{{ instana_agent_plugin.saphana.singlecontainer.user }}' #default is 'SYSTEM'
+    password: '{{ instana_agent_plugin.saphana.singlecontainer.password }}'
+  {% endif %}
+# multicontainer not yet implemented.
 #  multiContainer:
 #    DATABASE_NAME_1: #example 'HXE'
 #      user: '' #default is 'SYSTEM'
@@ -180,3 +231,50 @@ com.instana.plugin.generic.hardware:
 #    DATABASE_NAME_2:
 #      user: '' #default is 'SYSTEM'
 #      password: ''
+{% endif %}
+
+{% if instana_agent_plugin.azure.enabled is sameas true %}
+# Azure
+{% if instana_agent_plugin.azure.apimanagement.enabled is sameas true %}
+com.instana.plugin.azure.apimanagement:
+  enabled: true
+{% endif %}
+{% if instana_agent_plugin.azure.appservice.enabled is sameas true %}
+com.instana.plugin.azure.appservice:
+  enabled: true
+{% endif %}
+{% if instana_agent_plugin.azure.cosmosdb.enabled is sameas true %}
+com.instana.plugin.azure.cosmosdb:
+  enabled: true
+{% endif %}
+{% if instana_agent_plugin.azure.rediscache.enabled is sameas true %}
+com.instana.plugin.azure.rediscache:
+  enabled: true
+{% endif %}
+{% if instana_agent_plugin.azure.sqldb.enabled is sameas true %}
+com.instana.plugin.azure.sqldb:
+  enabled: true
+{% endif %}
+{% if instana_agent_plugin.azure.sqlelasticpool.enabled is sameas true %}
+com.instana.plugin.azure.sqlelasticpool:
+  enabled: true
+{% endif %}
+{% if instana_agent_plugin.azure.sqlserver.enabled is sameas true %}
+com.instana.plugin.azure.sqlserver:
+  enabled: true
+{% endif %}
+{% if instana_agent_plugin.azure.storage.enabled is sameas true %}
+com.instana.plugin.azure.storage:
+  enabled: true
+{% endif %}
+{% endif %}
+
+{% if instana_agent_plugin.vsphere.enabled is sameas true %}
+# VMWare vSphere
+com.instana.plugin.vsphere:
+  enabled: true
+  host: https://{{ instana_agent_plugin.vsphere.hostname }}/sdk
+  username: {{ instana_agent_plugin.vsphere.user }}
+  password: {{ instana_agent_plugin.vsphere.password }}
+  poll_rate: {{ instana_agent_plugin.vsphere.poll_rate }} # metrics poll rate in seconds
+{% endif %}

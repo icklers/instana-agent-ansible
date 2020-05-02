@@ -36,3 +36,4 @@
 - include: install.yml
 - include: init.yml
 - include: files.yml
+  tags: [configuration]
